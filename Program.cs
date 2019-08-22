@@ -79,5 +79,18 @@ namespace Overmodded.DocGen
             Console.WriteLine("Press any key to close.");
             Console.Read();
         }
+
+        internal static void Process(string str, bool warn = false)
+        {
+            if (AppConfig.Loaded.LogProcessing)
+            {
+                if (warn)
+                    JEMLogger.LogWarning(str, "PROCESSING");
+                else
+                {
+                    JEMLogger.Log(str, "PROCESSING");
+                }
+            }
+        }
     }
 }

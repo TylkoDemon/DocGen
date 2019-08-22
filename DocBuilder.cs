@@ -39,12 +39,19 @@ namespace Overmodded.DocGen
             var buildFiles = new List<string>();
             foreach (var type in allTypes)
             {
+                Program.Process($"Generating from type: {type.FullName}");
                 var fileName = BuildType(type);
                 if (string.IsNullOrEmpty(fileName))
+                {
+                    Program.Process($"Target type ({type.Name}) refused to generate content.", true);
                     continue;
+                }
 
                 buildFiles.Add(fileName);
+                Program.Process($"Content successfully generated from: {type.FullName}");
             }
+
+            Program.Process($"Generating Sidebar from {buildFiles.Count} files.");
 
             // TODO: Support multiple assemblies
             var str = new StringBuilder();
@@ -79,21 +86,32 @@ namespace Overmodded.DocGen
         private string BuildType(Type t)
         {
             if (!t.IsVisible)
+            {
+                Program.Process($"Target type ({t.Name}) is not visible!", true);
                 return null;
+            }
 
             if (DocBuilderHelper.IsTypeArrayContainsNotAllowed(t))
+            {
+                Program.Process($"Target type ({t.Name}) is not allowed to be generated!", true);
                 return null;
+            }
 
             var fileName = DocSyntax.CollectTypeName(t);
             var filePath = DocSyntax.GetMarkdownFile($"{DeployDir}{JEMVar.DirectorySeparatorChar}{fileName}");
             if (DocSyntax.FixVarName(ref filePath))
+            {
+                Program.Process($"Target type ({t.Name}) has invalid filePath ({filePath}).", true);
                 return null;
+            }
 
             var str = new StringBuilder();
             var subStr = new StringBuilder();
 
             if (t.IsClass)
             {
+                Program.Process($"New class: {t.Name}");
+
                 // HEADER
                 str.AppendLine($"# {t.Name}");
                 if (t.BaseType != null && t.BaseType != typeof(Object))
@@ -166,6 +184,8 @@ namespace Overmodded.DocGen
             }
             else if (t.IsEnum)
             {
+                Program.Process($"New Enum: {t.Name}");
+
                 // HEADER
                 str.AppendLine($"# {t.Name}");
                 if (t.BaseType != null && t.BaseType != typeof(Object))

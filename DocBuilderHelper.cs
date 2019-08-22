@@ -24,13 +24,16 @@ namespace Overmodded.DocGen
         internal static void BuildEvents(Type t, StringBuilder str, XmlNodeList nodes, TypeContent typeContent, bool applyStatic)
         {
             var events = t.GetEvents();
+            Program.Process($"{events.Length} events in {t.Name}. content:{typeContent}, static:{applyStatic}");
+
             var buildProperties = new List<DocProperty>();
             foreach (var e in events)
             {
                 if (!CanApplyStatic(IsEventStatic(e), applyStatic))
-                    continue;
+                    continue;     
                 if (!IsTypeContentCorrectForTypes(e.DeclaringType, t, typeContent))
                     continue;
+                
                 //if (IsTypeArrayContainsNotAllowed(e.PropertyType, e.DeclaringType))
                 //    continue;
                 DocClassHelper.CollectClassEvent(nodes, e, out var name, out var type, out var description);
@@ -44,10 +47,11 @@ namespace Overmodded.DocGen
             DocProperty.BuildTabeleFromProperties(str, DocPropertyTabeleStyle.Event, applyStatic, buildProperties.ToArray());
         }
 
-
         internal static void BuildFields(Type t, StringBuilder str, XmlNodeList nodes, TypeContent typeContent, bool applyStatic)
         {
             var fields = t.GetFields();
+            Program.Process($"{fields.Length} fields in {t.Name}. content:{typeContent}, static:{applyStatic}");
+
             var buildProperties = new List<DocProperty>();
             foreach (var f in fields)
             {
@@ -55,8 +59,13 @@ namespace Overmodded.DocGen
                     continue;
                 if (!IsTypeContentCorrectForTypes(f.DeclaringType, t, typeContent))
                     continue;
+
                 if (IsTypeArrayContainsNotAllowed(f.FieldType, f.DeclaringType))
+                {
+                    Program.Process($"field {f.Name} refused to generate: IsTypeArrayContainsNotAllowed::True", true);
                     continue;
+                }
+
                 DocClassHelper.CollectClassField(nodes, f, out var name, out var type, out var description);
                 buildProperties.Add(new DocProperty
                 {
@@ -71,6 +80,8 @@ namespace Overmodded.DocGen
         internal static void BuildProperties(Type t, StringBuilder str, XmlNodeList nodes, TypeContent typeContent, bool applyStatic)
         {
             var properties = t.GetProperties();
+            Program.Process($"{properties.Length} properties in {t.Name}. content:{typeContent}, static:{applyStatic}");
+
             var buildProperties = new List<DocProperty>(); 
             foreach (var p in properties)
             {
@@ -78,8 +89,13 @@ namespace Overmodded.DocGen
                     continue;
                 if (!IsTypeContentCorrectForTypes(p.DeclaringType, t, typeContent))
                     continue;
+
                 if (IsTypeArrayContainsNotAllowed(p.PropertyType, p.DeclaringType))
+                {
+                    Program.Process($"property {p.Name} refused to generate: IsTypeArrayContainsNotAllowed::True", true);
                     continue;
+                }
+
                 DocClassHelper.CollectClassProperty(nodes, p, out var name, out var type, out var protection, out var description);
                 buildProperties.Add(new DocProperty
                 {
@@ -94,22 +110,36 @@ namespace Overmodded.DocGen
 
         internal static void BuildMethods(Type t, StringBuilder str, XmlNodeList nodes, TypeContent typeContent, bool applyStatic)
         {
-            var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+            var methods = t.GetMethods();
+            Program.Process($"{methods.Length} methods in {t.Name}. content:{typeContent}, static:{applyStatic}");
+
             var buildProperties = new List<DocProperty>();
             foreach (var m in methods)
             {
                 if (!CanApplyStatic(m.IsStatic, applyStatic))
                     continue;
-                if (!m.IsPublic || m.IsAbstract || m.IsVirtual)
-                    continue;
-                if (!IsDeclaringTypeAllowed(m.DeclaringType))
-                    continue;
                 if (!IsTypeContentCorrectForTypes(m.DeclaringType, t, typeContent))
-                    continue;
-                if (IsTypeArrayContainsNotAllowed(new List<Type>(m.GetGenericArguments()) {m.DeclaringType}.ToArray()))
                     continue;
                 if (IsMethodPropertySetOrGet(t, m))
                     continue;
+
+                if (!m.IsPublic || m.IsAbstract || m.IsVirtual || m.IsPrivate)
+                {
+                    Program.Process($"method {m.Name} refused to generate: can't access::(public:{m.IsPublic} || abstract:{m.IsAbstract} || virtual:{m.IsVirtual} || private:{m.IsPrivate})", true);
+                    continue;
+                }
+
+                if (!IsDeclaringTypeAllowed(m.DeclaringType))
+                {
+                    Program.Process($"method {m.Name} refused to generate: IsDeclaringTypeAllowed::false", true);
+                    continue;
+                }
+
+                if (IsTypeArrayContainsNotAllowed(new List<Type>(m.GetGenericArguments()) {m.DeclaringType}.ToArray()))
+                {
+                    Program.Process($"method {m.Name} refused to generate: IsTypeArrayContainsNotAllowed::true", true);
+                    continue;
+                }
 
                 DocClassHelper.CollectClassMethod(nodes, m, out var name, out var type, out var description);
                 buildProperties.Add(new DocProperty
@@ -126,6 +156,8 @@ namespace Overmodded.DocGen
         internal static void BuildEnum(Type t, StringBuilder str, XmlNodeList nodes)
         {
             var names = Enum.GetNames(t);
+            Program.Process($"{names.Length} names in enum {t.Name}");
+
             var buildProperties = new List<DocProperty>();
             foreach (var n in names)
             {
