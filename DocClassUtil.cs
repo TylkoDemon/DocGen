@@ -41,18 +41,25 @@ namespace Overmodded.DocGen
         /// </summary>
         internal static string GetParametersXmlString(ParameterInfo[] parameters, string fullName)
         {
-            if (parameters.Length != 0)
+            try
             {
-                fullName += "(";
-                for (var index = 0; index < parameters.Length; index++)
+                if (parameters.Length != 0)
                 {
-                    var parameter = parameters[index];
-                    fullName += parameter.ParameterType.FullName.Replace('&', '@');
-                    if (index + 1 < parameters.Length)
-                        fullName += ",";
-                }
+                    fullName += "(";
+                    for (var index = 0; index < parameters.Length; index++)
+                    {
+                        var parameter = parameters[index];
+                        fullName += parameter.ParameterType.FullName.Replace('&', '@');
+                        if (index + 1 < parameters.Length)
+                            fullName += ",";
+                    }
 
-                fullName += ")";
+                    fullName += ")";
+                }
+            }
+            catch (Exception)
+            {
+                fullName = "GEN_ERR";
             }
 
             return fullName;
