@@ -222,7 +222,11 @@ namespace Overmodded.DocGen
                     break;
                 case TypeContent.Inherited:
                     if (a != b)
-                        return true;
+                    {
+                        // do not list Inherited members that are not a part of targeted assemblies
+                        return Generator.LoadedAssemblies.Any(e => e == a.Assembly);
+                    }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeContent), typeContent, null);

@@ -46,21 +46,28 @@ namespace Overmodded.DocGen
         ///     Gets markdown string of given type.
         ///     It includes type reference.
         /// </summary>
-        internal static string GetTypeMarkdown(Type t)
+        internal static string GetTypeMarkdown(Type t, bool quote = true)
         {
             var name = string.Empty;
             var typeName = DocSyntax.FixVarName(t.Name); // fix type name
             if (!CanDefineTypeReference(t))
             {
-                name += "`";
+                if (quote)
+                    name += "`";
                 name += typeName;
-                name += "` ";
+                if (quote)
+                    name += "`";
+                name += " ";
             }
             else
             {
-                name += "[`";
+                name += "[";
+                if (quote)
+                    name += "`";
                 name += typeName;
-                name += $"`]({DocSyntax.CollectMarkDownReference(t)})";
+                if (quote)
+                    name += "`";
+                name += $"]({DocSyntax.CollectMarkDownReference(t)})";
             }
 
             return name;

@@ -99,8 +99,7 @@ namespace Overmodded.DocGen
                 if (t.BaseType != null && t.BaseType != typeof(Object))
                 {
                     str.AppendLine($"<small>class in `{Path.GetFileNameWithoutExtension(new Uri(t.Assembly.CodeBase).AbsolutePath)}` " +
-                                   $"/ inherits from [{DocSyntax.CollectTypeName(t.BaseType)}]" +
-                                   $"({DocSyntax.CollectMarkDownReference(t.BaseType)})</small>");
+                                   $"/ inherits from {DocClassUtil.GetTypeMarkdown(t.BaseType, false)}</small>");
                 }
                 str.AppendLine(string.Empty);
 
