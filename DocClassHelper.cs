@@ -40,10 +40,7 @@ namespace Overmodded.DocGen
             out string description)
         {
             var parameters = info.GetParameters();
-            if (!DocClassUtil.CanDefineTypeReference(info.ReturnType))
-               returnType = $"`{DocSyntax.FixVarName(info.ReturnType.Name)}`";
-            else
-               returnType = $"[`{DocSyntax.FixVarName(info.ReturnType.Name)}`]({DocSyntax.CollectMarkDownReference(info.ReturnType)})";
+            returnType = DocClassUtil.GetTypeMarkdown(info.ReturnType);
             name = $"`{info.Name}`{DocClassUtil.GetParametersMarkdownString(parameters)}";
             description = FullSummaryCollection(info.DeclaringType, info.Name, parameters, nodes);
         }

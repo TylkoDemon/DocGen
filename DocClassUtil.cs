@@ -4,6 +4,7 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
+using JEM.Core.Debugging;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -20,7 +21,15 @@ namespace Overmodded.DocGen
             string name;
             if (parameters.Length != 0)
             {
-                name = parameters.Aggregate("(", (current, parameter) => current + GetTypeMarkdown(parameter.ParameterType));
+                name = "(";
+                for (var index = 0; index < parameters.Length; index++)
+                {
+                    var parameter = parameters[index];
+                    name = name + GetTypeMarkdown(parameter.ParameterType, fixedName: parameter.Name);
+                    //if (index + 1 < parameters.Length)
+                    //    name += " ` ` ";
+                }
+
                 name += ")";
             }
             else name = "()";
@@ -35,7 +44,14 @@ namespace Overmodded.DocGen
             if (parameters.Length != 0)
             {
                 fullName += "(";
-                fullName = parameters.Aggregate(fullName, (current, p) => current + p.ParameterType.FullName);
+                for (var index = 0; index < parameters.Length; index++)
+                {
+                    var parameter = parameters[index];
+                    fullName += parameter.ParameterType.FullName.Replace('&', '@');
+                    if (index + 1 < parameters.Length)
+                        fullName += ",";
+                }
+
                 fullName += ")";
             }
 
@@ -46,10 +62,21 @@ namespace Overmodded.DocGen
         ///     Gets markdown string of given type.
         ///     It includes type reference.
         /// </summary>
-        internal static string GetTypeMarkdown(Type t, bool quote = true)
+        internal static string GetTypeMarkdown(Type t, bool quote = true, string fixedName = null)
         {
             var name = string.Empty;
             var typeName = DocSyntax.FixVarName(t.Name); // fix type name
+            if (t.IsByRef)
+            {
+                typeName = typeName.Remove(typeName.Length - 1, 1);
+                typeName = $"ref {typeName}";
+            }
+
+            if (!string.IsNullOrEmpty(fixedName))
+            {
+                typeName += $" *{fixedName}*";
+            }
+
             if (!CanDefineTypeReference(t))
             {
                 if (quote)
