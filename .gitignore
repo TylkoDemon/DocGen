@@ -1,0 +1,26 @@
+# Build results
+x64/
+x86/
+bld/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Dd]eploy/
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild/
+[Mm]ono/
+[Ll]ibs/
+[Cc]ache/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# Msc
+*.DotSettings
+*.DotSettings.user
