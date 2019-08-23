@@ -114,10 +114,14 @@ namespace Overmodded.DocGen
 
                 // HEADER
                 str.AppendLine($"# {t.Name}");
-                if (t.BaseType != null && t.BaseType != typeof(Object))
+                if (t.BaseType != null && t.BaseType != typeof(object))
                 {
                     str.AppendLine($"<small>class in `{Path.GetFileNameWithoutExtension(new Uri(t.Assembly.CodeBase).AbsolutePath)}` " +
                                    $"/ inherits from {DocClassUtil.GetTypeMarkdown(t.BaseType, false)}</small>");
+                }
+                else
+                {
+                    str.AppendLine($"<small>{(t.IsAbstract && t.IsSealed ? "static " : string.Empty)}class in `{Path.GetFileNameWithoutExtension(new Uri(t.Assembly.CodeBase).AbsolutePath)}`</small>");
                 }
                 str.AppendLine(string.Empty);
 

@@ -81,7 +81,7 @@ namespace Overmodded.DocGen
 
             if (!string.IsNullOrEmpty(fixedName))
             {
-                typeName += $" *{fixedName}*";
+                typeName += $" {fixedName}";
             }
 
             if (!CanDefineTypeReference(t))
