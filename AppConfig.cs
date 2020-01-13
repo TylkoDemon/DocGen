@@ -7,7 +7,7 @@
 using JEM.Core.Configuration;
 using System;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     /// <summary>
     ///     DocGen main configuration file.

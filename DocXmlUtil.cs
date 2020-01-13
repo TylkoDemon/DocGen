@@ -7,7 +7,7 @@
 using System;
 using System.Xml;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal static class DocXmlUtil
     {

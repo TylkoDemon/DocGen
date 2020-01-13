@@ -4,12 +4,11 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
-using JEM.Core.Debugging;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal static class DocClassUtil
     {

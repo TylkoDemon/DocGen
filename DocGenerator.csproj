@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AE116640-3C6F-4624-8875-7FD738E5C5B2}</ProjectGuid>
+    <ProjectGuid>{531CFAD5-F8B9-452D-AB85-D9492CC1A867}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Overmodded.DocGen</RootNamespace>
-    <AssemblyName>Overmodded.DocGen</AssemblyName>
+    <RootNamespace>DocGen</RootNamespace>
+    <AssemblyName>DocGen</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -75,7 +75,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Overmodded.DocGen.Program</StartupObject>
+    <StartupObject>DocGen.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>

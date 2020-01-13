@@ -8,7 +8,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal static class DocSyntax
     {

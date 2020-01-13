@@ -12,7 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal static class Generator
     {

@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal enum TypeContent
     {

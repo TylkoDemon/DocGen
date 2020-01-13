@@ -7,7 +7,7 @@
 using System;
 using System.Text;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal enum DocPropertyTabeleStyle
     {

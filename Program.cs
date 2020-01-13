@@ -9,7 +9,7 @@ using JEM.Core.Debugging;
 using System;
 using System.IO;
 
-namespace Overmodded.DocGen
+namespace DocGen
 {
     internal class Program
     {
