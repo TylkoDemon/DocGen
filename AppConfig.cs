@@ -4,8 +4,8 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
-using JEM.Core.Configuration;
 using System;
+using JEM.Configuration;
 
 namespace DocGen
 {
@@ -107,7 +107,7 @@ namespace DocGen
         /// </summary>
         internal static void LoadConfiguration()
         {
-            Loaded = JEMConfiguration.LoadData<AppConfig>(JEMConfiguration.ResolveFilePath(FileName));
+            Loaded = ConfigurationFactory.LoadData<AppConfig>(ConfigurationFactory.ResolveFilePath(FileName));
         }
 
         /// <summary>

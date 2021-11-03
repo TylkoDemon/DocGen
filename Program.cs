@@ -4,14 +4,14 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
-using JEM.Core.Configuration;
-using JEM.Core.Debugging;
 using System;
 using System.IO;
+using JEM.Configuration;
+using JEM.Debugging;
 
 namespace DocGen
 {
-    internal class Program
+    internal static class Program
     {
         private static void Main()
         {          
@@ -20,47 +20,46 @@ namespace DocGen
 
             // set configuration directory
             var workDir = Environment.CurrentDirectory;
-            JEMConfiguration.CurrentDirectory = workDir;
+            ConfigurationFactory.CurrentDirectory = workDir;
 
             // set up logger
-            JEMLogger.SilentMode = false;
-            JEMLogger.Init();
-            JEMLogger.LoggerCustomRootDirectory = workDir;
-            JEMLogger.ClearLoggerDirectory();
-            JEMLogger.OnLogAppended += (source, type, value, stacktrace) =>
+            Logger.LoggerMode = LoggerMode.Normal;
+            Logger.ClearLoggerDirectory();
+            Logger.OnLogAppended += (in Log log) => 
             {
                 ConsoleColor previousColor = Console.ForegroundColor;
-                string prefixes = $"[{DateTime.Now:T}] {source.ToUpper()}";
+                string prefixes = $"[{DateTime.Now:T}] {log.SourceGroup.ToUpper()}";
                 string message;
-                switch (type)
+                string stacktrace = string.Empty;
+                switch (log.Type)
                 {
-                    case JEMLogType.Log:
+                    case LogType.Log:
                         Console.ForegroundColor = ConsoleColor.DarkGray;
-                        message = $"{prefixes} {value}";
+                        message = $"{prefixes} {log.Contents}";
                         stacktrace = string.Empty;
                         break;
-                    case JEMLogType.Warning:
+                    case LogType.Warning:
                         Console.ForegroundColor = ConsoleColor.DarkYellow;
-                        message = $"{prefixes} WARN {value}";
+                        message = $"{prefixes} WARN {log.Contents}";
                         stacktrace = string.Empty;
                         break;
-                    case JEMLogType.Error:
+                    case LogType.Error:
                         Console.ForegroundColor = ConsoleColor.Red;
-                        message = $"{prefixes} ERR {value}";
+                        message = $"{prefixes} ERR {log.Contents}";
                         stacktrace = string.Empty;
                         break;
-                    case JEMLogType.Exception:
+                    case LogType.Exception:
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.WriteLine();
 
-                        message = $"{prefixes} FATAL {value}";
+                        message = $"{prefixes} FATAL {log.Contents}";
                         if (string.IsNullOrWhiteSpace(stacktrace))
                         {
                             stacktrace = "Stacktrace is not available for this element.";
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                        throw new ArgumentOutOfRangeException(nameof(log.Type), log.Type, null);
                 }
 
                 Console.WriteLine(message);
@@ -72,7 +71,7 @@ namespace DocGen
                 Console.ForegroundColor = previousColor;
             };
 
-            JEMLogger.Log($"Current game work directory is `{workDir}`.", "APP");
+            Logger.Log($"Current game work directory is `{workDir}`.", "APP");
 
             Generator.Run();
 
@@ -85,10 +84,10 @@ namespace DocGen
             if (AppConfig.Loaded.LogProcessing)
             {
                 if (warn)
-                    JEMLogger.LogWarning(str, "PROCESSING");
+                    Logger.LogWarning(str, "PROCESSING");
                 else
                 {
-                    JEMLogger.Log(str, "PROCESSING");
+                    Logger.Log(str, "PROCESSING");
                 }
             }
         }

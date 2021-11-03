@@ -4,13 +4,13 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
-using JEM.Core;
-using JEM.Core.Debugging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using JEM;
+using JEM.Debugging;
 
 namespace DocGen
 {
@@ -18,31 +18,31 @@ namespace DocGen
     {
         internal static void Run()
         {
-            JEMLogger.Log("Loading appcfg.", "APP");
+            Logger.Log("Loading appcfg.", "APP");
             AppConfig.LoadConfiguration();
 
             if (!Directory.Exists(AssembliesDirectory))
             {
-                JEMLogger.LogError($"Assemblies directory `{AssembliesDirectory}` does not exist.", "APP");
+                Logger.LogError($"Assemblies directory `{AssembliesDirectory}` does not exist.", "APP");
                 return;
             }
 
-            var assembliesTargets = AssembliesDirectory + JEMVar.DirectorySeparatorChar + AppConfig.Loaded.AssembliesTargetsFile;
+            var assembliesTargets = AssembliesDirectory + EnvironmentUtility.DirectorySeparator + AppConfig.Loaded.AssembliesTargetsFile;
             if (!File.Exists(assembliesTargets))
             {
-                JEMLogger.LogError($"File defining target assemblies `{assembliesTargets}` does not exist.", "APP");
+                Logger.LogError($"File defining target assemblies `{assembliesTargets}` does not exist.", "APP");
                 return;
             }
 
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
-                JEMLogger.LogError("Failed to resolve assembly " + args.Name, "APP");
+                Logger.LogError("Failed to resolve assembly " + args.Name, "APP");
                 return Assembly.LoadFrom(args.Name);
             };
 
             AssembliesNames = File.ReadAllLines(assembliesTargets);
-            JEMLogger.Log($"{AssembliesNames.Length} target assemblies found.", "APP");
-            foreach (var a in AssembliesNames) JEMLogger.Log($"\t{a}", "APP");
+            Logger.Log($"{AssembliesNames.Length} target assemblies found.", "APP");
+            foreach (var a in AssembliesNames) Logger.Log($"\t{a}", "APP");
             Console.WriteLine();
 
             if (Directory.Exists(DeployDirectory))
@@ -52,7 +52,7 @@ namespace DocGen
 
             foreach (var a in AssembliesNames)
             {
-                var file = AssembliesDirectory + JEMVar.DirectorySeparatorChar + a + ".dll";
+                var file = AssembliesDirectory + EnvironmentUtility.DirectorySeparator + a + ".dll";
                 AssemblyName assemblyName = null;
                 try
                 {
@@ -60,20 +60,20 @@ namespace DocGen
                 }
                 catch (Exception e)
                 {
-                    JEMLogger.LogException(e, "APP");
+                    Logger.LogException(e, "APP");
                 }
 
                 var assembly = assemblyName == null ? null : Assembly.Load(assemblyName);
                 if (assembly == null)
-                    JEMLogger.LogError($"Unable to load assembly `{file}`", "APP");
+                    Logger.LogError($"Unable to load assembly `{file}`", "APP");
                 else
                 {
-                    JEMLogger.Log($"Assembly {file} loaded..", "APP");
+                    Logger.Log($"Assembly {file} loaded..", "APP");
                     LoadedAssemblies.Add(assembly);
                 }
             }
 
-            JEMLogger.Log("Generating.", "APP");
+            Logger.Log("Generating.", "APP");
             foreach (var assembly in LoadedAssemblies)
             {
                 try
@@ -91,9 +91,9 @@ namespace DocGen
         private static void GenerateOffAssembly(Assembly assembly)
         {  
             var file = new Uri(assembly.CodeBase).AbsolutePath;
-            JEMLogger.Log($"Generating doc of { Path.GetFileName(file)} ({assembly.GetTypes().Length} unique types to process)", "APP");
+            Logger.Log($"Generating doc of { Path.GetFileName(file)} ({assembly.GetTypes().Length} unique types to process)", "APP");
 
-            var xmlFile = Path.GetDirectoryName(file) + JEMVar.DirectorySeparatorChar +
+            var xmlFile = Path.GetDirectoryName(file) + EnvironmentUtility.DirectorySeparator +
                           Path.GetFileNameWithoutExtension(file) + ".xml";
             var doc = new XmlDocument();
             doc.Load(xmlFile);
@@ -101,7 +101,7 @@ namespace DocGen
             var b = new DocBuilder(assembly, doc, DeployDirectory, ExamplesDirectory);
             var files = b.Build();
 
-            JEMLogger.Log($"Done! ({files.Count} .md files generated)", "APP");
+            Logger.Log($"Done! ({files.Count} .md files generated)", "APP");
         }
 
         internal static List<Assembly> LoadedAssemblies { get; } = new List<Assembly>();
@@ -109,11 +109,11 @@ namespace DocGen
         internal static string[] AssembliesNames { get; private set; } = new string[0];
 
         internal static string AssembliesDirectory =>
-            Environment.CurrentDirectory + JEMVar.DirectorySeparatorChar + AppConfig.Loaded.AssembliesDir;
+            Environment.CurrentDirectory + EnvironmentUtility.DirectorySeparator + AppConfig.Loaded.AssembliesDir;
 
         internal static string DeployDirectory => AppConfig.Loaded.DeployDir;
 
         internal static string ExamplesDirectory =>
-            Environment.CurrentDirectory + JEMVar.DirectorySeparatorChar + AppConfig.Loaded.ExamplesDir;
+            Environment.CurrentDirectory + EnvironmentUtility.DirectorySeparator + AppConfig.Loaded.ExamplesDir;
     }
 }

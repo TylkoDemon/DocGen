@@ -4,13 +4,13 @@
 // Copyright (c) 2019 ADAM MAJCHEREK ALL RIGHTS RESERVED
 //
 
-using JEM.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using JEM;
 
 namespace DocGen
 {
@@ -73,11 +73,11 @@ namespace DocGen
                 str.AppendLine(File.ReadAllText(AppConfig.Loaded.SidebarEnd));
             }
 
-            WriteAllText($"{DeployDir}{JEMVar.DirectorySeparatorChar}{AppConfig.Loaded.SidebarName}", str.ToString());
+            WriteAllText($"{DeployDir}{EnvironmentUtility.DirectorySeparator}{AppConfig.Loaded.SidebarName}", str.ToString());
 
             if (File.Exists(AppConfig.Loaded.ReadMe))
             {
-                File.Copy(AppConfig.Loaded.ReadMe, $"{DeployDir}{JEMVar.DirectorySeparatorChar}README.md");
+                File.Copy(AppConfig.Loaded.ReadMe, $"{DeployDir}{EnvironmentUtility.DirectorySeparator}README.md");
             }
 
             return buildFiles;
@@ -98,7 +98,7 @@ namespace DocGen
             }
 
             var fileName = DocSyntax.CollectTypeName(t);
-            var filePath = DocSyntax.GetMarkdownFile($"{DeployDir}{JEMVar.DirectorySeparatorChar}{fileName}");
+            var filePath = DocSyntax.GetMarkdownFile($"{DeployDir}{EnvironmentUtility.DirectorySeparator}{fileName}");
             if (DocSyntax.FixVarName(ref filePath))
             {
                 Program.Process($"Target type ({t.Name}) has invalid filePath ({filePath}).", true);
@@ -245,7 +245,7 @@ namespace DocGen
             if (!Directory.Exists(ExamplesDir))
                 return null;
 
-            string fileName = ExamplesDir + JEMVar.DirectorySeparatorChar + t.Name + ".md";
+            string fileName = ExamplesDir + EnvironmentUtility.DirectorySeparator + t.Name + ".md";
             if (File.Exists(fileName))
                 return fileName;
             else
